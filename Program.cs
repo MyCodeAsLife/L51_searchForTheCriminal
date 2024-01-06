@@ -17,13 +17,14 @@ namespace L51_searchForTheCriminal
     class CriminalDatabase
     {
         private List<Criminal> _criminals = new List<Criminal>();
+        private FormatOutput _format = new FormatOutput();
 
         public CriminalDatabase()
         {
             Fill();
         }
 
-        enum Menu
+        private enum Menu
         {
             Find = 1,
             ShowAll = 2,
@@ -37,10 +38,10 @@ namespace L51_searchForTheCriminal
             while (isOpen)
             {
                 Console.Clear();
-                Console.WriteLine($"База данных преступников.\n" + new string(FormatOutput.DelimiterSymbolString, FormatOutput.DelimiterLenght) +
+                Console.WriteLine($"База данных преступников.\n" + new string(_format.DelimiterSymbolString, _format.DelimiterLenght) +
                                   $"\n{(int)Menu.Find} - Поиск преступников по параметрам.\n{(int)Menu.ShowAll} - Отобразить всех " +
                                   $"преступников.\n{(int)Menu.Exit} - Выйти из программы.\n" +
-                                  new string(FormatOutput.DelimiterSymbolMenu, FormatOutput.DelimiterLenght));
+                                  new string(_format.DelimiterSymbolMenu, _format.DelimiterLenght));
 
                 Console.Write("Выберите действие: ");
 
@@ -55,7 +56,7 @@ namespace L51_searchForTheCriminal
                             break;
 
                         case Menu.ShowAll:
-                            ShowAll();
+                            ShowAll(_criminals);
                             break;
 
                         case Menu.Exit:
@@ -63,27 +64,22 @@ namespace L51_searchForTheCriminal
                             continue;
 
                         default:
-                            Error.Show();
+                            ShowError();
                             break;
                     }
                 }
                 else
                 {
-                    Error.Show();
+                    ShowError();
                 }
 
                 Console.ReadKey(true);
             }
         }
 
-        private void ShowAll()
-        {
-            Show(_criminals);
-        }
-
         private bool TrySearch(out List<Criminal> filteredCriminal)
         {
-            Console.WriteLine("Данные для поиска преступника.\n" + new string(FormatOutput.DelimiterSymbolMenu, FormatOutput.DelimiterLenght));
+            Console.WriteLine("Данные для поиска преступника.\n" + new string(_format.DelimiterSymbolMenu, _format.DelimiterLenght));
 
             Console.Write("Введите национальность: ");
             string nationality = Console.ReadLine();
@@ -106,12 +102,12 @@ namespace L51_searchForTheCriminal
                 }
                 else
                 {
-                    Error.Show();
+                    ShowError();
                 }
             }
             else
             {
-                Error.Show();
+                ShowError();
             }
 
             filteredCriminal = null;
@@ -121,21 +117,21 @@ namespace L51_searchForTheCriminal
         private void ShowFound()
         {
             if (TrySearch(out List<Criminal> finedCriminal))
-                Show(finedCriminal);
+                ShowAll(finedCriminal);
             else
                 Console.WriteLine("По указанным параметрам, преступников на свободе не найдено.");
         }
 
-        private void Show(List<Criminal> _criminals)
+        private void ShowAll(List<Criminal> _criminals)
         {
-            Console.WriteLine("Данные преступников.\n" + new string(FormatOutput.DelimiterSymbolMenu, FormatOutput.DelimiterLenght));
+            Console.WriteLine("Данные преступников.\n" + new string(_format.DelimiterSymbolMenu, _format.DelimiterLenght));
 
             foreach (var criminal in _criminals)
             {
                 Console.WriteLine($"ФИО: {criminal.FullName}\nНациональность: {criminal.Nationality}\n" +
                                   $"Рост: {criminal.Height}\nВес: {criminal.Weight}\n" +
                                   $"Статус: {(criminal.IsInPrison ? "Под стражей" : "На свободе")}");
-                Console.WriteLine(new string(FormatOutput.DelimiterSymbolString, FormatOutput.DelimiterLenght));
+                Console.WriteLine(new string(_format.DelimiterSymbolString, _format.DelimiterLenght));
             }
         }
 
@@ -147,26 +143,23 @@ namespace L51_searchForTheCriminal
             _criminals.Add(new Criminal("Чичиков Павел Иванович", "славянин", 108, 160, true));
         }
 
-        internal class Error
+        private void ShowError()
         {
-            public static void Show()
-            {
-                Console.WriteLine("\nВы ввели некорректное значение.");
-            }
+            Console.WriteLine("\nВы ввели некорректное значение.");
         }
 
-        internal class FormatOutput
+        private class FormatOutput
         {
-            static FormatOutput()
+            public FormatOutput()
             {
                 DelimiterSymbolMenu = '=';
                 DelimiterSymbolString = '-';
                 DelimiterLenght = 75;
             }
 
-            public static char DelimiterSymbolMenu { get; private set; }
-            public static char DelimiterSymbolString { get; private set; }
-            public static int DelimiterLenght { get; private set; }
+            public char DelimiterSymbolMenu { get; private set; }
+            public char DelimiterSymbolString { get; private set; }
+            public int DelimiterLenght { get; private set; }
         }
     }
 
