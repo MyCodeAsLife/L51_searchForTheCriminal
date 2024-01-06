@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.SqlServer.Server;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -17,10 +18,18 @@ namespace L51_searchForTheCriminal
     class CriminalDatabase
     {
         private List<Criminal> _criminals = new List<Criminal>();
-        private FormatOutput _format = new FormatOutput();
+        private String _delimiterString;
+        private String _delimiterMenu;
 
         public CriminalDatabase()
         {
+            char delimiterSymbolMenu = '=';
+            char delimiterSymbolString = '-';
+            int delimiterLenght = 75;
+
+            _delimiterString = new string(delimiterSymbolString, delimiterLenght);
+            _delimiterMenu = new string(delimiterSymbolMenu, delimiterLenght);
+
             Fill();
         }
 
@@ -38,10 +47,9 @@ namespace L51_searchForTheCriminal
             while (isOpen)
             {
                 Console.Clear();
-                Console.WriteLine($"База данных преступников.\n" + new string(_format.DelimiterSymbolString, _format.DelimiterLenght) +
-                                  $"\n{(int)Menu.Find} - Поиск преступников по параметрам.\n{(int)Menu.ShowAll} - Отобразить всех " +
-                                  $"преступников.\n{(int)Menu.Exit} - Выйти из программы.\n" +
-                                  new string(_format.DelimiterSymbolMenu, _format.DelimiterLenght));
+                Console.WriteLine($"База данных преступников.\n" + _delimiterString + $"\n{(int)Menu.Find} - Поиск " +
+                                  $"преступников по параметрам.\n{(int)Menu.ShowAll} - Отобразить всех преступников." +
+                                  $"\n{(int)Menu.Exit} - Выйти из программы.\n" + _delimiterMenu);
 
                 Console.Write("Выберите действие: ");
 
@@ -79,7 +87,7 @@ namespace L51_searchForTheCriminal
 
         private bool TrySearch(out List<Criminal> filteredCriminal)
         {
-            Console.WriteLine("Данные для поиска преступника.\n" + new string(_format.DelimiterSymbolMenu, _format.DelimiterLenght));
+            Console.WriteLine("Данные для поиска преступника.\n" + _delimiterMenu);
 
             Console.Write("Введите национальность: ");
             string nationality = Console.ReadLine();
@@ -124,14 +132,13 @@ namespace L51_searchForTheCriminal
 
         private void ShowAll(List<Criminal> _criminals)
         {
-            Console.WriteLine("Данные преступников.\n" + new string(_format.DelimiterSymbolMenu, _format.DelimiterLenght));
+            Console.WriteLine("Данные преступников.\n" + _delimiterMenu);
 
             foreach (var criminal in _criminals)
             {
-                Console.WriteLine($"ФИО: {criminal.FullName}\nНациональность: {criminal.Nationality}\n" +
-                                  $"Рост: {criminal.Height}\nВес: {criminal.Weight}\n" +
-                                  $"Статус: {(criminal.IsInPrison ? "Под стражей" : "На свободе")}");
-                Console.WriteLine(new string(_format.DelimiterSymbolString, _format.DelimiterLenght));
+                Console.WriteLine($"ФИО: {criminal.FullName}\nНациональность: {criminal.Nationality}\nРост: " +
+                                  $"{criminal.Height}\nВес: {criminal.Weight}\nСтатус: " +
+                                  $"{(criminal.IsInPrison ? "Под стражей" : "На свободе")}\n" + _delimiterString);
             }
         }
 
@@ -146,20 +153,6 @@ namespace L51_searchForTheCriminal
         private void ShowError()
         {
             Console.WriteLine("\nВы ввели некорректное значение.");
-        }
-
-        private class FormatOutput
-        {
-            public FormatOutput()
-            {
-                DelimiterSymbolMenu = '=';
-                DelimiterSymbolString = '-';
-                DelimiterLenght = 75;
-            }
-
-            public char DelimiterSymbolMenu { get; private set; }
-            public char DelimiterSymbolString { get; private set; }
-            public int DelimiterLenght { get; private set; }
         }
     }
 
